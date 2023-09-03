@@ -1,0 +1,204 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="/styles/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+</head>
+<body>
+  <div id="map" style="height: 400px;"></div>
+  <script src="https://cdn.jsdelivr.net/gh/somanchiu/Keyless-Google-Maps-API@v6.0/mapsJavaScriptAPI.js" async
+    defer></script>
+  <script>
+    let userX, userY;
+
+    function showPosition(position) {
+      userX = parseFloat(position.coords.latitude);
+      userY = parseFloat(position.coords.longitude);
+      initMap(); // Call initMap after getting user's location
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition);
+    }
+
+    function initMap() {
+      let coOrdinates = '<%- JSON.stringify(coOrdinates)%>';
+      coOrdinates = JSON.parse(coOrdinates);
+      let tourStops = [];
+      // Push current location with draggable marker
+      tourStops.push([{ lat: userX, lng: userY }, "Current", true]);
+
+      coOrdinates.forEach(element => {
+        tourStops.push([{ lat: parseFloat(element.lat), lng: parseFloat(element.lng) }, element.name, false]);
+      });
+
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 18,
+        center: { lat: userX, lng: userY },
+      });
+
+      const infoWindow = new google.maps.InfoWindow();
+
+      // Create the markers.
+      tourStops.forEach(([position, title, draggable], i) => {
+        const marker = new google.maps.Marker({
+          position,
+          map,
+          title: `${i + 1}. ${title}`,
+          label: `${i + 1}`,
+          optimized: false,
+          draggable: draggable, // Make only the current location marker draggable
+        });
+
+        // Add a click listener for each marker, and set up the info window.
+        marker.addListener("click", () => {
+          infoWindow.close();
+          infoWindow.setContent(marker.getTitle());
+          infoWindow.open(marker.getMap(), marker);
+        });
+
+        // Add a dragend listener to handle marker drag events for the current location marker
+        if (draggable) {
+          marker.addListener("dragend", () => {
+            const newPosition = marker.getPosition();
+            console.log(`Lat ${newPosition.lat()}, Lng ${newPosition.lng()}`);
+          });
+        }
+      });
+    }
+
+  </script>
+</body>
+
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="/styles/style.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+</head>
+
+<body>
+  <div id="map" style="height: 400px;"></div>
+  <button type="button" id="btn-modal" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="display: none;">
+    Launch static backdrop modal
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Request Rescue Team</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="rescueTeamData">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/gh/somanchiu/Keyless-Google-Maps-API@v6.0/mapsJavaScriptAPI.js" async defer></script>
+  <script>
+    let userX, userY;
+    let circle;
+
+    function showPosition(position) {
+      userX = parseFloat(position.coords.latitude);
+      userY = parseFloat(position.coords.longitude);
+      initMap();
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPosition);
+    }
+    let phone_no = "12345";
+    function initMap() {
+      let coOrdinates = '<%- JSON.stringify(coOrdinates)%>';
+      coOrdinates = JSON.parse(coOrdinates);
+      let tourStops = [];
+      tourStops.push([{ lat: userX, lng: userY }, "Current "+phone_no, true]);
+      
+      coOrdinates.forEach(element => {
+        tourStops.push([{ lat: parseFloat(element.lat), lng: parseFloat(element.lng) }, `${element.name} Phone No:${phone_no}`, false]);
+      });
+
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 18,
+        center: { lat: userX, lng: userY },
+      });
+
+      const infoWindow = new google.maps.InfoWindow();
+
+      tourStops.forEach(([position, title, draggable], i) => {
+        const marker = new google.maps.Marker({
+          position,
+          map,
+          title: `${i + 1}. ${title}`,
+          label: `${i + 1}`,
+          optimized: false,
+          draggable: draggable,
+        });
+
+        marker.addListener("click", () => {
+          infoWindow.close();
+          infoWindow.setContent(marker.getTitle());
+          infoWindow.open(marker.getMap(), marker);
+        });
+
+        if (draggable) {
+          marker.addListener("dragend", () => {
+            const newPosition = marker.getPosition();
+            console.log(`Lat ${newPosition.lat()}, Lng ${newPosition.lng()}`);
+            circle.setCenter(newPosition);
+          });
+        }
+      });
+
+      circle = new google.maps.Circle({
+        strokeColor: "#0000FF",
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: "#0000FF",
+        fillOpacity: 0.35,
+        map,
+        center: { lat: userX, lng: userY },
+        radius: 100,
+        draggable: false,
+      });
+      
+    }
+    
+    document.body.addEventListener("click",()=>{
+      document.getElementsByClassName("gm-style-iw gm-style-iw-c")[0].addEventListener("click",()=>{
+            let modalButton = document.getElementById("btn-modal");
+            let rteam = document.getElementsByClassName("gm-style-iw-d")[0].textContent;
+            console.log(rteam);
+            if(rteam.includes("Current") && rteam.includes("1"))
+            { 
+              alert("Cannot choose user location");
+            }else{
+            modalButton.click();
+            }
+      })
+      document.getElementById("rescueTeamData").innerHTML =  `<b>${document.getElementsByClassName("gm-style-iw-d")[0].textContent}</b>`;
+    })
+  </script>
+</body>
+
+</html>
